@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DiagnozaTab from './components/DiagnozaTab'
 
 const TABS = [
   { id: 'diagnoza', label: 'DIAGNOZA' },
@@ -34,6 +35,20 @@ function Placeholder({ title }) {
 
 export default function App() {
   const [tab, setTab] = useState('diagnoza')
+  const [history, setHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('n53_history') || '[]') } catch { return [] }
+  })
+
+  const addToHistory = entry => {
+    const updated = [entry, ...history].slice(0, 50)
+    setHistory(updated)
+    localStorage.setItem('n53_history', JSON.stringify(updated))
+  }
+
+  const clearHistory = () => {
+    setHistory([])
+    localStorage.removeItem('n53_history')
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -68,7 +83,7 @@ export default function App() {
 
       {/* ── CONTENT ── */}
       <main className="content">
-        {tab === 'diagnoza' && <Placeholder title="DIAGNOZA" />}
+        {tab === 'diagnoza' && <DiagnozaTab onSave={addToHistory} />}
         {tab === 'obd'      && <Placeholder title="KODY OBD" />}
         {tab === 'vision'   && <Placeholder title="VISION"   />}
         {tab === 'historia' && <Placeholder title="HISTORIA" />}
